@@ -42,3 +42,6 @@ HEADERS += \
 
 FORMS += \
     TestWidget.ui
+
+DISTFILES +=
+RC_ICONS = res/Music.ico

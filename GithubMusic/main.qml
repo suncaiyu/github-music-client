@@ -1,84 +1,93 @@
-import QtQuick 2.12
-import QtQuick.Window 2.12
-import QtQuick.Controls 2.5
+﻿import QtQuick 2.12
+import QtQuick.Window 2.3
+import QtQuick.Controls 2.14
 import QtMultimedia 5.9
 import Furrain.HttpManager 1.0
 import Furrain.ProcessJson 1.0
+import Qt.labs.platform 1.1
+import QtQuick.Dialogs 1.3
 
 Window {
+    // 逻辑 当双击后先变为false，此时会把上一首歌的停掉，不自动播放下一首，当播放时，变为true，此时播放结束后会自动播放下一首
+    // 点击停止按钮后变为false，不自动播放下一首
+    property bool playnext: true
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("Furrain Music")
+    id : ww;
+    onClosing:{
+        close.accepted = false;
+        ww.hide();
+    }
 
-    ListView {
-        id : listView
-        anchors.fill:parent
-        delegate: Item{
-            id : root_item
-            x:0;
-            y:0
-            width:listView.width
-            height:45
-            Text {
-                anchors.fill: parent
-                verticalAlignment: Text.AlignVCenter//垂直居中
-                text: modelData
-            }
-            Text {
-                id : play
-                x:parent.width - parent.height +8
-                y : 0
-                width:parent.height-8
-                height : parent.height
-                font.family: "FontAwesome"
-                font.pixelSize: 30
-                verticalAlignment: Text.AlignVCenter//垂直居中
-                text: "\uf04b"
-            }
-            MouseArea{
-                anchors.fill:parent
-                onClicked: {
-                    if (mouseX < root_item.width - root_item.height) {
-                        listView.currentIndex = index
-                    } else {
-                        HttpManager.downLoad(processJson.urlList[index], processJson.nameList[index])
-                    }
+    Column {
+        Row{
+            id : mainrow
+            width : ww.width
+            height : ww.height - 100;
+            MainPane{
+                id : pane
+                width:150
+                height:mainrow.height
+                onGetMusicList: {
+                    HttpManager.getNetworkInfo(url);
                 }
-                onDoubleClicked: {
-                    console.log(processJson.urlList[index])
-                    HttpManager.downLoad(processJson.urlList[index], processJson.nameList[index])
+                onShowAddWindow: {
+                    iii.show()
+                }
+            }
+            MusicListView {
+                id : listview
+                height:mainrow.height
+                width: mainrow.width - pane.width
+                onDoubleclicked: {
+                    playnext = false;
                 }
             }
         }
-        highlight: Rectangle{
-            color:"hotpink";
+
+
+        ControlBar {
+            id : control
+            height : 100
+            width:mainrow.width
+            onTimeChanged: {
+                player.seek(time)
+            }
+            onPauseMusic: {
+                player.pause()
+            }
+            onPlayMusic: {
+                playnext = true
+                player.play()
+            }
+            onStopMusic: {
+                playnext = false;
+                player.stop()
+            }
+            onNowValueChanged: {
+                player.volume = nowValue
+            }
         }
-        highlightMoveDuration: 500
     }
 
-    ProcessJson {
-        id : processJson
-    }
 
-    //    MouseArea {
-    //        anchors.fill: parent
-    //        onClicked: {
-    //            HttpManager.getNetworkInfo("https://api.github.com/repos/music-repo-chi/chi-music/contents/%E9%99%88%E5%A5%95%E8%BF%85");
-    //        }
-    //    }
+
     Connections {
         target: HttpManager
-        onUrlGetInfo:{
-            processJson.process(info)
-            var l1 = processJson.nameList;
-            listView.model = l1
-        }
         onReadyOk:{
             console.log("file:/" + name)
             player.source =  "file:/" + name
-            player.volume = 0.8
+            player.volume = control.nowValue
             player.play();
+        }
+        onUpdateList:{
+            listview.mModel = HttpManager.processJson.nameList;
+        }
+        onErrorMessageSignal:{
+            calendar.text = msg
+            dataDialog.open();
         }
     }
     Item {
@@ -94,15 +103,79 @@ Window {
     SelectGithub {
         id : iii
         visible: false
-        //        "https://api.github.com/repos/music-repo-chi/chi-music/contents/%E9%99%88%E5%A5%95%E8%BF%85"
-        onUrlText: {
-            //            player.source =  "file:/" + "D:/QtProject/build-GithubMusic-Desktop_Qt_5_14_0_MinGW_32_bit-Debug/Music/1874-陈奕迅.mp3"
-            //            player.volume = 0.8
-            //            player.play();
-            HttpManager.getNetworkInfo(str);
+        onAddNameUrl: {
+            pane.panemodel.append({singername : name, musicurl : url})
         }
     }
     MediaPlayer{
         id:player
+        notifyInterval: 1000
+        onDurationChanged: {
+            control.musicSlider.maximumValue = duration
+            control.total = duration
+        }
+        onPositionChanged: {
+            control.musicSlider.value = position
+            control.now = position
+        }
+        onPlaybackStateChanged: {
+            console.log(playbackState)
+            switch(playbackState) {
+            case MediaPlayer.PlayingState :
+                playnext = true
+                control.changePlay()
+                break;
+            case MediaPlayer.StoppedState:
+                control.changePause();
+                // 播放下一个
+                if (playnext) {
+                    if (listview.mLv.currentIndex == listview.mLv.model.length - 1) {
+                        listview.mLv.currentIndex = 0
+                    } else {
+                        listview.mLv.currentIndex = listview.mLv.currentIndex + 1
+                    }
+                    HttpManager.downLoad(HttpManager.processJson.urlList[listview.mLv.currentIndex], HttpManager.processJson.nameList[listview.mLv.currentIndex])
+                }
+                break;
+            case MediaPlayer.PausedState:
+                control.changePause();
+                break;
+            }
+        }
+        onErrorStringChanged: {
+            console.log(errorString)
+            calendar.text = errorString;
+            dataDialog.open()
+        }
+    }
+
+    SystemTrayIcon {
+        visible: true
+        icon.source: "qrc:/font/res/Music.png"
+        onActivated: {
+            if (reason === SystemTrayIcon.Trigger) {
+                ww.show()
+                ww.raise()
+                ww.requestActivate()
+            }
+        }
+        menu: Menu {
+            MenuItem {
+                text: qsTr("Quit")
+                onTriggered: Qt.quit()
+            }
+        }
+    }
+
+    Dialog {
+        id: dataDialog
+        visible: false
+        title: "Error"
+        standardButtons: Dialog.Ok
+
+        Text {
+            id: calendar
+            text: "???"
+        }
     }
 }

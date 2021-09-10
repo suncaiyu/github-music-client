@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/font">
-        <file>res/font/fontawesome-webfont.ttf</file>
-        <file>res/Music.png</file>
-        <file>res/Music.ico</file>
-    </qresource>
-</RCC>

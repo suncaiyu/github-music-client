@@ -13,7 +13,7 @@ class ProcessJson : public QObject
     Q_PROPERTY(QStringList urlList READ urlList WRITE setUrlList)
 public:
     ProcessJson();
-    Q_INVOKABLE void process(QByteArray);
+    Q_INVOKABLE void process(QByteArray, bool flag = true);
     Q_INVOKABLE int test() {return 111;}
     Q_INVOKABLE void processArray(QJsonDocument);
     QStringList nameList() {
@@ -28,6 +28,10 @@ public:
 private:
     QStringList nList;
     QStringList uList;
+
+signals:
+    void searchOk();
+    void research(QStringList);
 };
 
 #endif // PROCESSJSON_H
