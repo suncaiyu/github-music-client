@@ -3,5 +3,6 @@
         <file>res/font/fontawesome-webfont.ttf</file>
         <file>res/Music.png</file>
         <file>res/Music.ico</file>
+        <file>res/star.png</file>
     </qresource>
 </RCC>

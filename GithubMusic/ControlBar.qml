@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
+import QtQuick.Controls.Styles 1.4
 
 Item {
     property alias musicSlider: timeSlider
@@ -32,7 +33,7 @@ Item {
 
         Column {
             anchors.fill: parent
-            Slider{
+            Slider{ // 这里用的qml 1.0 的控件，效果不是很好,后面换成qml 2.0的
                 x: 5
                 id : timeSlider
                 height : 50
@@ -40,6 +41,31 @@ Item {
                 value: 0.5
                 onValueChanged: {
                     timeChanged(value)
+                }
+                style: SliderStyle {
+                    handle:
+                        Rectangle{
+                        anchors.centerIn: parent
+                        color : "white"
+                        border.color : "gray"
+                        border.width : 1
+                        width : 20
+                        height : 20
+                        radius:10
+                    }
+                    groove: Rectangle{
+                        implicitWidth: timeSlider.width
+                        implicitHeight: 6
+                        radius: 3
+                        color: "lightgray"
+                        Rectangle{
+                            id :front
+                            implicitWidth: timeSlider.value / timeSlider.maximumValue * timeSlider.width
+                            implicitHeight: 6
+                            radius: 3
+                            color : Qt.lighter("#448497")
+                        }
+                    }
                 }
             }
             RowLayout {
@@ -117,12 +143,12 @@ Item {
                     id : volumnicon
                     width : 100
                     height : buttonGroup.height
-//                    Layout.fillHeight: true
+                    //                    Layout.fillHeight: true
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     Layout.rightMargin: 10
                     Text {
                         id : volume
-                         anchors.centerIn: parent
+                        anchors.centerIn: parent
                         font.family: "FontAwesome"
                         font.pixelSize: 20
                         verticalAlignment: Text.AlignVCenter//垂直居中

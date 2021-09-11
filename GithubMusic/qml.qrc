@@ -6,5 +6,7 @@
         <file>ControlBar.qml</file>
         <file>MusicListView.qml</file>
         <file>Volumn.qml</file>
+        <file>BackGround.qml</file>
+        <file>StatusBarIcon.qml</file>
     </qresource>
 </RCC>

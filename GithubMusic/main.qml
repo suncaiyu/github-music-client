@@ -1,11 +1,9 @@
-import QtQuick 2.12
 import QtQuick.Window 2.3
+import QtQuick 2.12
 import QtQuick.Controls 2.14
 import QtMultimedia 5.9
 import Furrain.HttpManager 1.0
 import Furrain.ProcessJson 1.0
-import Qt.labs.platform 1.1
-import QtQuick.Dialogs 1.3
 
 Window {
     // 逻辑 当双击后先变为false，此时会把上一首歌的停掉，不自动播放下一首，当播放时，变为true，此时播放结束后会自动播放下一首
@@ -112,13 +110,7 @@ Window {
             }
         }
     }
-    SelectGithub {
-        id : iii
-        visible: false
-        onAddNameUrl: {
-            pane.panemodel.append({singername : name, musicurl : url})
-        }
-    }
+
     MediaPlayer{
         id:player
         notifyInterval: 1000
@@ -166,25 +158,12 @@ Window {
         }
     }
 
-    SystemTrayIcon {
-        visible: true
-        icon.source: "qrc:/font/res/Music.png"
-        onActivated: {
-            if (reason === SystemTrayIcon.Trigger) {
-                ww.show()
-                ww.raise()
-                ww.requestActivate()
-            }
-        }
-        menu: Menu {
-            MenuItem {
-                text: qsTr("Quit")
-                onTriggered: Qt.quit()
-            }
-        }
+    StatusBarIcon {
+        id : statusbaricon
     }
 
     Dialog {
+        anchors.centerIn: parent
         id: dataDialog
         visible: false
         title: "Error"
@@ -203,6 +182,19 @@ Window {
         onTriggered: {
             control.musicSlider.value = player.position;
             control.now = player.position
+        }
+    }
+
+    BackGround {
+        id : bg
+        anchors.fill: parent
+    }
+
+    SelectGithub {
+        id : iii
+        visible: false
+        onAddNameUrl: {
+            pane.panemodel.append({singername : name, musicurl : url})
         }
     }
 }
