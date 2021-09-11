@@ -30,7 +30,6 @@ void HttpManager::reGetNetworkInfo(QUrl url)
 
 void HttpManager::downLoad(QString i, QString name)
 {
-    qDebug() << i;
     qDebug() << name;
     QDir folder(qApp->applicationDirPath() + "/Music");
     if (!folder.exists()) {
@@ -52,7 +51,6 @@ void HttpManager::downLoad(QString i, QString name)
     connect(replay, &QNetworkReply::readyRead, this, [this](){
         QNetworkReply *r = qobject_cast<QNetworkReply *>(sender());
         if (r->error() != QNetworkReply::NoError) {
-            qDebug() << "has error : " << r->error();
             errorMessageSignal("has error Code:" + QString::number(r->error()));
             return;
         }
@@ -61,22 +59,19 @@ void HttpManager::downLoad(QString i, QString name)
     connect(replay, &QNetworkReply::downloadProgress, this, [this](qint64 cur, qint64 all){
         QNetworkReply *r = qobject_cast<QNetworkReply *>(sender());
         if (r->error() != QNetworkReply::NoError) {
-            qDebug() << "has error : " << r->error();
             errorMessageSignal("has error Code:" + QString::number(r->error()));
             return;
         }
-        qDebug() << all << "---->" << cur;
+        downLoadProcessSignal(all, cur);
     });
     connect(replay, &QNetworkReply::finished, this, [this, name](){
         QNetworkReply *r = qobject_cast<QNetworkReply *>(sender());
         if (r->error() != QNetworkReply::NoError) {
-            qDebug() << "has error : " << r->error();
             errorMessageSignal("has error Code:" + QString::number(r->error()));
             return;
         }
         mDownLoadFile->close();
         if (mDownLoadFile->size() == 0) {
-            qDebug() << "文件大小是0";
             errorMessageSignal("文件大小是0");
             return;
         }

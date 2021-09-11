@@ -1,4 +1,4 @@
-﻿#include "ProcessJson.h"
+#include "ProcessJson.h"
 #include <QDebug>
 
 ProcessJson::ProcessJson()
@@ -15,19 +15,19 @@ void ProcessJson::process(QByteArray array, bool flag)
     QJsonParseError jsonError;
     QJsonDocument document = QJsonDocument::fromJson(array, &jsonError);
     if (!document.isNull() && (jsonError.error == QJsonParseError::NoError)) {
-        qDebug() << "Parse is ok";
+        qDebug() << "解析完成";
     } else {
         if (document.isNull()) {
-            qDebug() << "Parse is null";
+            qDebug() << "解析是空的";
         }
         if (jsonError.error != QJsonParseError::NoError) {
-            qDebug() << "Parse JsonError" << jsonError.error;
+            qDebug() << "解析JsonError" << jsonError.error;
         }
     }
     if (document.isArray()) {
         processArray(document);
     } else {
-        qDebug() << "not array";
+        qDebug() << "不是array";
     }
 }
 

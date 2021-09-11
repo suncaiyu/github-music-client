@@ -26,6 +26,7 @@ signals:
     void readyOk(QString name);
     void updateList();
     void errorMessageSignal(QString msg);
+    void downLoadProcessSignal(qint64 all, qint64 current);
 public slots:
     void GetInfoSlot();
     void reGetInfoSlot();

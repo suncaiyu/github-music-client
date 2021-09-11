@@ -4,7 +4,7 @@ Item {
     id : root
     property alias mModel: listView.model
     property alias mLv: listView
-    signal doubleclicked()
+    signal doubleclicked(var index)
     ListView {
         id : listView
         height:root.height
@@ -53,7 +53,7 @@ Item {
                     listView.currentIndex = index
                 }
                 onDoubleClicked: {
-                    doubleclicked()
+                    doubleclicked(index)
                     HttpManager.downLoad(HttpManager.processJson.urlList[index], HttpManager.processJson.nameList[index])
                 }
             }
