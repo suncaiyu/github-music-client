@@ -4,6 +4,8 @@ import QtQuick.Controls 2.14
 import QtMultimedia 5.9
 import Furrain.HttpManager 1.0
 import Furrain.ProcessJson 1.0
+import Furrain.Settings 1.0
+import Furrain.SystemIcon 1.0
 
 Window {
     // 逻辑 当双击后先变为false，此时会把上一首歌的停掉，不自动播放下一首，当播放时，变为true，此时播放结束后会自动播放下一首
@@ -18,6 +20,13 @@ Window {
     onClosing:{
         close.accepted = false;
         ww.hide();
+    }
+
+    SystemIcon {
+        id : sicon
+    }
+    Component.onCompleted: {
+        sicon.setWindow(ww)
     }
 
     Column {
@@ -158,9 +167,9 @@ Window {
         }
     }
 
-    StatusBarIcon {
-        id : statusbaricon
-    }
+//    StatusBarIcon {
+//        id : statusbaricon
+//    }
 
     Dialog {
         anchors.centerIn: parent
@@ -194,6 +203,15 @@ Window {
         id : iii
         visible: false
         onAddNameUrl: {
+            for (var i = 0; i < pane.panemodel.count; ++i) {
+                var data = pane.panemodel.get(i)
+                if (data.singername == name) {
+                    calendar.text = "name is exist";
+                    dataDialog.open()
+                    return;
+                }
+            }
+            Settings.addInfo(url, name)
             pane.panemodel.append({singername : name, musicurl : url})
         }
     }

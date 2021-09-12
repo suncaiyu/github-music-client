@@ -1,5 +1,5 @@
 import QtQuick 2.0
-
+import Furrain.Settings 1.0
 Item {
     signal getMusicList(var url)
     signal showAddWindow()
@@ -99,6 +99,13 @@ Item {
         ListElement {
             singername: "林俊杰";
             musicurl : "https://api.github.com/repos/jay1song/forjj/contents";
+        }
+        Component.onCompleted: {
+            Settings.getInfo();
+            console.log(Settings.mName.length)
+            for (var i = 0; i < Settings.mUrl.length ; ++i) {
+                listmodel.append({singername : Settings.mName[i], musicurl : Settings.mUrl[i]});
+            }
         }
     }
 

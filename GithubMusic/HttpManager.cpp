@@ -6,7 +6,7 @@
 #include <QDir>
 //HttpManager::Manager HttpManager::manager = Manager();
 HttpManager *HttpManager::mMe = nullptr;
-
+// c++单例
 HttpManager *HttpManager::GetInstance()
 {
     if(mMe == nullptr) {
@@ -15,6 +15,7 @@ HttpManager *HttpManager::GetInstance()
     return mMe;
 }
 
+// 首次搜索用的
 void HttpManager::getNetworkInfo(QUrl url)
 {
     mUrl = url;
@@ -22,15 +23,16 @@ void HttpManager::getNetworkInfo(QUrl url)
     connect(replay, &QNetworkReply::finished, this, &HttpManager::GetInfoSlot);
 }
 
+// 继续搜索用的
 void HttpManager::reGetNetworkInfo(QUrl url)
 {
     QNetworkReply *replay = mGetInfoManager->get(QNetworkRequest(url));
     connect(replay, &QNetworkReply::finished, this, &HttpManager::reGetInfoSlot);
 }
 
+// 下载
 void HttpManager::downLoad(QString i, QString name)
 {
-    qDebug() << name;
     QDir folder(qApp->applicationDirPath() + "/Music");
     if (!folder.exists()) {
         folder.mkdir(qApp->applicationDirPath() + "/Music");
@@ -38,13 +40,16 @@ void HttpManager::downLoad(QString i, QString name)
     folder.setFilter(QDir::Files|QDir::Hidden);
     folder.setSorting(QDir::DirsFirst);
     QFileInfoList list = folder.entryInfoList();
-    QNetworkReply *replay = mDownloadManager->get(QNetworkRequest(i));
-    qDebug() << replay->error();
     for (int i = 0; i < list.size(); ++i) {
         if (list.at(i).fileName() == name) {
             emit readyOk(QDir::fromNativeSeparators(qApp->applicationDirPath() + "/Music/" + name));
             return;
         }
+    }
+    QNetworkReply *replay = mDownloadManager->get(QNetworkRequest(i));
+    if (replay->error() != QNetworkReply::NoError) {
+        errorMessageSignal("has error Code :" + QString::number(replay->error()));
+        return;
     }
     mDownLoadFile = new QFile(QCoreApplication::applicationDirPath() + "/Music/unknown");
     mDownLoadFile->open(QIODevice::WriteOnly);
@@ -83,6 +88,7 @@ void HttpManager::downLoad(QString i, QString name)
     });
 }
 
+// 首次搜索用的
 void HttpManager::GetInfoSlot()
 {
     QNetworkReply *replay = qobject_cast<QNetworkReply *>(this->sender());
@@ -90,6 +96,7 @@ void HttpManager::GetInfoSlot()
     mPJson->process(info);
 }
 
+// 继续搜索用的
 void HttpManager::reGetInfoSlot()
 {
     QNetworkReply *replay = qobject_cast<QNetworkReply *>(this->sender());
@@ -98,6 +105,7 @@ void HttpManager::reGetInfoSlot()
     mPJson->process(info, false);
 }
 
+// 构造
 HttpManager::HttpManager()
 {
     mGetInfoManager = new QNetworkAccessManager;
@@ -107,11 +115,13 @@ HttpManager::HttpManager()
     dir.setSorting(QDir::DirsFirst);
     QFileInfoList list = dir.entryInfoList();
     mPJson = new ProcessJson;
+    // 更新信息
     connect(mPJson, &ProcessJson::searchOk, this, [this](){
         mUrl.clear();
         emit updateList();
         qDebug() << mPJson->nameList().size();
     });
+    // 如果有文件夹，继续搜索
     connect(mPJson, &ProcessJson::research, this, [this](QStringList dirs){
         for(int i = 0; i < dirs.size(); ++i) {
             QUrl tmp = QUrl(mUrl.toString() + "/" + dirs[i]);
@@ -130,6 +140,7 @@ HttpManager::~HttpManager()
     mPJson = nullptr;
 }
 
+// qml单例
 QObject *HttpManager::httpmanager_qobject_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)

@@ -3,15 +3,19 @@
 #include "TestWidget.h"
 #include "HttpManager.h"
 #include "ProcessJson.h"
+#include "ListSettings.h"
+#include "SystemIcon.h"
 #include <QApplication>
 #include <QFontDatabase>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     qmlRegisterSingletonType<HttpManager>("Furrain.HttpManager", 1, 0, "HttpManager", HttpManager::httpmanager_qobject_singletontype_provider);
+    qmlRegisterSingletonType<ListSettings>("Furrain.Settings", 1, 0, "Settings", ListSettings::qml_getisntance);
     qmlRegisterType<ProcessJson>("Furrain.ProcessJson", 1, 0, "ProcessJson");
+    qmlRegisterType<SystemIcon>("Furrain.SystemIcon", 1, 0, "SystemIcon");
     int fontId = QFontDatabase::addApplicationFont(":/font/res/font/fontawesome-webfont.ttf");
     QStringList fontFamilies = QFontDatabase::applicationFontFamilies(fontId);
     QQmlApplicationEngine engine;

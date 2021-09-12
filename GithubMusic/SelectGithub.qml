@@ -25,7 +25,7 @@ Window {
         TextField {
             id : tfUrl
             Layout.fillWidth: true
-            placeholderText: "请输入api地址"
+            placeholderText: "请输入api地址";
         }
         Button {
             id : sure
@@ -36,6 +36,7 @@ Window {
                     return
                 }
                 addNameUrl(tfName.text, tfUrl.text)
+                root.hide()
             }
         }
     }

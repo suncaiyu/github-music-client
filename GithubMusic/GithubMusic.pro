@@ -15,8 +15,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         HttpManager.cpp \
+        ListSettings.cpp \
         LoadFontIcon.cpp \
         ProcessJson.cpp \
+        SystemIcon.cpp \
         TestWidget.cpp \
         main.cpp
 
@@ -36,8 +38,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     HttpManager.h \
+    ListSettings.h \
     LoadFontIcon.h \
     ProcessJson.h \
+    SystemIcon.h \
     TestWidget.h
 
 FORMS += \
