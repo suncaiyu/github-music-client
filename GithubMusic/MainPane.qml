@@ -1,4 +1,4 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import Furrain.Settings 1.0
 Item {
     signal getMusicList(var url)
@@ -64,6 +64,7 @@ Item {
                 delegate:del
                 model: listmodel
                 highlight: hightlight
+                clip: true
             }
         }
     }

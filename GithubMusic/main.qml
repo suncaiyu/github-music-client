@@ -1,4 +1,4 @@
-import QtQuick.Window 2.3
+﻿import QtQuick.Window 2.3
 import QtQuick 2.12
 import QtQuick.Controls 2.14
 import QtMultimedia 5.9
@@ -40,6 +40,7 @@ Window {
                 height:mainrow.height
                 onGetMusicList: {
                     HttpManager.getNetworkInfo(url);
+                    listview.sindex = 0
                 }
                 onShowAddWindow: {
                     iii.show()

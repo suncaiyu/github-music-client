@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
@@ -25,7 +25,7 @@ Window {
         TextField {
             id : tfUrl
             Layout.fillWidth: true
-            placeholderText: "请输入api地址";
+            placeholderText: "请输入api地址"
         }
         Button {
             id : sure

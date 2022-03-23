@@ -1,4 +1,4 @@
-#ifndef HTTPMANAGER_H
+﻿#ifndef HTTPMANAGER_H
 #define HTTPMANAGER_H
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -7,6 +7,11 @@
 #include <QMediaPlayer>
 #include "ProcessJson.h"
 
+
+/// 搜索部分写的很烂，需要重构 ///
+///
+///
+///
 class Manager;
 class HttpManager : public QObject
 {

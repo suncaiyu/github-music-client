@@ -1,4 +1,4 @@
-#include <QGuiApplication>
+﻿#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "TestWidget.h"
 #include "HttpManager.h"
@@ -11,6 +11,8 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    qDebug()<<"QSslSocket="<<QSslSocket::sslLibraryBuildVersionString();
+    qDebug() << "OpenSSL支持情况:" << QSslSocket::supportsSsl();
     QApplication app(argc, argv);
     qmlRegisterSingletonType<HttpManager>("Furrain.HttpManager", 1, 0, "HttpManager", HttpManager::httpmanager_qobject_singletontype_provider);
     qmlRegisterSingletonType<ListSettings>("Furrain.Settings", 1, 0, "Settings", ListSettings::qml_getisntance);

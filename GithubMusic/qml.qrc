@@ -8,5 +8,6 @@
         <file>Volumn.qml</file>
         <file>BackGround.qml</file>
         <file>StatusBarIcon.qml</file>
+        <file>qtquickcontrols2.conf</file>
     </qresource>
 </RCC>
